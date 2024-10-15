@@ -89,8 +89,18 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         envs: DEBUG,SECRET_KEY,ALLOWED_HOSTS,DB_NAME,DB_USER,DB_PASSWORD,DATABASE_URL
         script: |
+          # Navigate to the project directory
           mkdir -p /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo
           cd /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo
+
+          # Clone or pull the latest version of the repository
+          if [ -d .git ]; then
+            git pull origin main
+          else
+            git clone https://github.com/maria-v-ch/user_directory_demo.git .
+          fi
+
+          # Create or update the .env file
           echo "DEBUG=${DEBUG}" > .env
           echo "SECRET_KEY=${SECRET_KEY}" >> .env
           echo "ALLOWED_HOSTS=${ALLOWED_HOSTS}" >> .env
@@ -98,7 +108,7 @@ jobs:
           echo "DB_USER=${DB_USER}" >> .env
           echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
           echo "DATABASE_URL=${DATABASE_URL}" >> .env
-          
+        
           # Install Docker and Docker Compose if not already installed
           if ! command -v docker &> /dev/null; then
             sudo apt-get update
