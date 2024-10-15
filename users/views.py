@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from rest_framework import generics, permissions
+from rest_framework.permissions import AllowAny  # Add this import
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import UserRegistrationSerializer, CustomTokenObtainPairSerializer, UserSerializer
 from django.contrib.auth import get_user_model
