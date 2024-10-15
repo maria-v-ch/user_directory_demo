@@ -30,6 +30,8 @@ def test_user_registration_view(client):
         'email': 'newuser@example.com',
         'password1': 'newuserpass123',
         'password2': 'newuserpass123',
+        'first_name': 'New',
+        'last_name': 'User'
     })
     assert response.status_code == 302  # Redirect after successful registration
     assert User.objects.filter(username='newuser').exists()

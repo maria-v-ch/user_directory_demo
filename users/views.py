@@ -34,12 +34,12 @@ class HomePageView(BaseView, TemplateView):
 class UserRegistrationView(BaseView, CreateView):
     template_name = 'users/register.html'
     form_class = UserRegistrationForm
-    success_url = reverse_lazy('user_list')
+    success_url = reverse_lazy('login')  # Redirect to login page after registration
 
     def form_valid(self, form):
-        user = form.save()
-        login(self.request, user)
-        return redirect('user_list')
+        response = super().form_valid(form)
+        login(self.request, self.object)  # Log the user in after registration
+        return response
 
 class UserLoginView(BaseView, LoginView):
     template_name = 'users/login.html'
@@ -81,12 +81,12 @@ def user_profile(request):
 class AdminUserListView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [AllowAny]  # Allow anyone to register
 
 class AdminUserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsOwnerOrAdmin]  # Use the custom permission we defined
 
 # Error handling views
 def bad_request(request, exception=None):
