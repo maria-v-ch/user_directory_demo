@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
+      DEBUG: 'False'
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      DEBUG: False
       ALLOWED_HOSTS: localhost,127.0.0.1,0.0.0.0,192.168.0.102,95.140.159.87
       DB_NAME: postgres
       DB_USER: postgres
@@ -87,8 +87,17 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
+        envs: DEBUG,SECRET_KEY,ALLOWED_HOSTS,DB_NAME,DB_USER,DB_PASSWORD,DATABASE_URL
         script: |
-          cd /path/to/your/project
-          git pull origin main
-          docker-compose pull
-          docker-compose up -d
+          cd /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo
+          echo "DEBUG=${DEBUG}" >> .env
+          echo "SECRET_KEY=${SECRET_KEY}" >> .env
+          echo "ALLOWED_HOSTS=${ALLOWED_HOSTS}" >> .env
+          echo "DB_NAME=${DB_NAME}" >> .env
+          echo "DB_USER=${DB_USER}" >> .env
+          echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
+          echo "DATABASE_URL=${DATABASE_URL}" >> .env
+          
+          # Pull the latest Docker image and restart the containers
+          sudo docker-compose pull
+          sudo docker-compose up -d
