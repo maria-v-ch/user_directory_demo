@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}404 Not Found{% endblock %}
+
+{% block content %}
+<h1>404 Not Found</h1>
+<p>Oops! We couldn't find the page you were looking for. This could be because:</p>
+<ul>
+    <li>The page has been moved or deleted</li>
+    <li>There's a typo in the URL</li>
+    <li>You clicked on an outdated link</li>
+</ul>
+<p>Don't worry, though! You can try:</p>
+<ul>
+    <li>Double-checking the URL for any mistakes</li>
+    <li>Using our site's search function to find what you're looking for</li>
+    <li>Starting from our <a href="{% url 'home' %}">homepage</a> and navigating to your desired page</li>
+</ul>
+<p>If you continue to encounter this error, please let us know so we can fix it!</p>
+{% endblock %}

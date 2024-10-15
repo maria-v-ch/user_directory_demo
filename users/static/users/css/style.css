@@ -1,0 +1,112 @@
+:root {
+    --memphis-yellow: #FAD141;
+    --memphis-pink: #FF6B6B;
+    --memphis-blue: #4ECDC4;
+    --memphis-purple: #A177FF;
+    --memphis-orange: #FF8C42;
+    --memphis-green: #61C0BF;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    overflow: hidden;
+    padding: 0 2rem;
+}
+
+.memphis-element {
+    transition: all 0.3s ease;
+}
+
+header {
+    background: #f4f4f4;
+    padding: 1rem 0;
+    margin-bottom: 1rem;
+}
+
+header h1 {
+    margin: 0;
+}
+
+nav ul {
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
+main {
+    padding: 2rem 0;
+}
+
+footer {
+    background: #f4f4f4;
+    text-align: center;
+    padding: 1rem 0;
+    margin-top: 2rem;
+}
+
+.btn {
+    display: inline-block;
+    background: #333;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.btn:hover {
+    background: #555;
+}
+
+/* New styles for form fields */
+.form-control.required {
+    border-color: #dc3545;
+}
+
+.form-control.required:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.form-label.required::after {
+    content: " *";
+    color: #dc3545;
+}
+
+/* Styles for required form fields */
+form .form-control[required] {
+    border-color: #dc3545 !important;
+}
+
+form .form-control[required]:focus {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+form .form-label.required::after {
+    content: " *";
+    color: #dc3545;
+}
+
+.required-label {
+    color: #dc3545;
+}
+
+.required-field {
+    border-color: #dc3545;
+}
+
+.required-field:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}

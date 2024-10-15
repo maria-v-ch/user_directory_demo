@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}400 Bad Request{% endblock %}
+
+{% block content %}
+<h1>400 Bad Request</h1>
+<p>Oops! It looks like there was a problem with your request. This usually happens when the server couldn't understand the request due to invalid syntax.</p>
+<p>Here are a few things you can try:</p>
+<ul>
+    <li>Double-check the URL for any typos</li>
+    <li>Make sure you're sending the correct data if you're submitting a form</li>
+    <li>Clear your browser cache and try again</li>
+</ul>
+<p>If you continue to see this error, please contact our support team. In the meantime, feel free to return to our <a href="{% url 'home' %}">homepage</a>.</p>
+{% endblock %}

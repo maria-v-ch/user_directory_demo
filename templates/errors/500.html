@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}500 Server Error{% endblock %}
+
+{% block content %}
+<h1>500 Server Error</h1>
+<p>We're sorry, but something went wrong on our end. Our team has been notified and we're working to fix the issue as quickly as possible.</p>
+<p>Here's what you can do:</p>
+<ul>
+    <li>Refresh the page and try again</li>
+    <li>Clear your browser cache and cookies, then retry</li>
+    <li>Come back in a little while - we might have fixed the problem by then!</li>
+</ul>
+<p>If the problem persists, please contact our support team and provide details about what you were doing when the error occurred.</p>
+<p>In the meantime, you can return to our <a href="{% url 'home' %}">homepage</a>.</p>
+{% endblock %}

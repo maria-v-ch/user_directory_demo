@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to User Directory{% endblock %}
+
+{% block content %}
+<h1 class="memphis-element">Welcome to User Directory</h1>
+
+<div class="mt-4">
+    <h2 class="memphis-element">About Our App</h2>
+    <p>User Directory is a friendly and easy-to-use platform designed to help you manage your community or organization. Here's what you can do with our app:</p>
+    
+    <ul class="list-group mt-3">
+        <li class="list-group-item">
+            <strong class="memphis-element">Create Your Profile:</strong> Join our community by setting up your personal profile with all the details you want to share.
+        </li>
+        <li class="list-group-item">
+            <strong class="memphis-element">Connect with Others:</strong> Once you're logged in, you can view a list of all users in the directory, helping you stay connected.
+        </li>
+        <li class="list-group-item">
+            <strong class="memphis-element">Keep Your Info Up-to-Date:</strong> Easily update your personal information whenever you need to.
+        </li>
+        <li class="list-group-item">
+            <strong class="memphis-element">Secure Access:</strong> We've implemented a robust login system to keep your information safe and private.
+        </li>
+        <li class="list-group-item">
+            <strong class="memphis-element">User-Friendly Design:</strong> This app is built with you in mind, making it simple and enjoyable to use.
+        </li>
+    </ul>
+
+    <p class="mt-4">Whether you're part of a small club or a large organization, User Directory helps you stay organized and connected. It's perfect for community groups, professional networks, or any group that wants to keep in touch!</p>
+
+    {% if not user.is_authenticated %}
+        <div class="mt-4">
+            <p>Ready to get started? Join today!</p>
+            <a href="{% url 'register' %}" class="btn btn-primary">Register</a>
+            <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+        </div>
+    {% else %}
+        <div class="mt-4">
+            <p>Welcome back! Ready to explore?</p>
+            <a href="{% url 'user_list' %}" class="btn btn-primary">View User Directory</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

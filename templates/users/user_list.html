@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}User List - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h2>User List</h2>
+<ul class="list-group">
+    {% for user in users %}
+    <li class="list-group-item">
+        <a href="{% url 'user_detail' user.id %}">{{ user.username }}</a>
+    </li>
+    {% empty %}
+    <li class="list-group-item">No users found.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

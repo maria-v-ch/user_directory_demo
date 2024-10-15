@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}403 Forbidden{% endblock %}
+
+{% block content %}
+<h1>403 Forbidden</h1>
+<p>Sorry, but you don't have permission to access this page. This could be because:</p>
+<ul>
+    <li>You're trying to access a page that's restricted to certain user roles</li>
+    <li>You're attempting to view or modify another user's information</li>
+    <li>Your account doesn't have the necessary privileges for this action</li>
+</ul>
+<p>If you believe you should have access to this page, please try logging out and logging back in. If the problem persists, contact our support team for assistance.</p>
+<p>You can always return to our <a href="{% url 'home' %}">homepage</a> or your <a href="{% url 'user_profile' %}">profile page</a>.</p>
+{% endblock %}
