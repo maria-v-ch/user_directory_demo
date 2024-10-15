@@ -90,12 +90,12 @@ jobs:
         envs: DEBUG,SECRET_KEY,ALLOWED_HOSTS,DB_NAME,DB_USER,DB_PASSWORD,DATABASE_URL
         script: |
           # Navigate to the project directory
-          mkdir -p /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo
           cd /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo
 
-          # Clone or pull the latest version of the repository
+          # Update the repository
           if [ -d .git ]; then
-            git pull origin main
+            git fetch --all
+            git reset --hard origin/main
           else
             git clone https://github.com/maria-v-ch/user_directory_demo.git .
           fi
@@ -119,6 +119,9 @@ jobs:
             sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
           fi
+
+          # Ensure we're in the correct directory
+          cd /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo
 
           # Pull the latest Docker image and restart the containers
           sudo docker-compose pull
