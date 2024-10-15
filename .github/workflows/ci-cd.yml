@@ -43,40 +43,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     
-    - name: Create static directory
-      run: mkdir -p static
-    
-    - name: Run migrations
-      run: python manage.py migrate
-    
     - name: Run tests
-      run: pytest
-
-  build-and-push-docker:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v2
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-    
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-    
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        push: true
-        tags: mariavch/user-directory:latest  # Replace with your DockerHub username
+      run: |
+        pytest
 
   deploy:
-    needs: build-and-push-docker
+    needs: build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     
@@ -87,101 +59,8 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
-        envs: DEBUG,SECRET_KEY,ALLOWED_HOSTS,DB_NAME,DB_USER,DB_PASSWORD,DATABASE_URL
         script: |
-          set -e
-          echo "Starting deployment process..."
-          
-          # Navigate to the project directory
           cd /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo
-          echo "Current directory: $(pwd)"
-          
-          # Update the repository
-          if [ -d .git ]; then
-            echo "Git repository exists. Updating..."
-            git fetch --all
-            git reset --hard origin/main
-          else
-            echo "Git repository doesn't exist. Initializing..."
-            git init
-            git remote add origin https://github.com/maria-v-ch/user_directory_demo.git
-            git fetch
-            git checkout -f main
-          fi
-          
-          echo "Git repository updated."
-          
-          # Create or update the .env file
-          echo "Updating .env file..."
-          echo "DEBUG=${DEBUG}" > .env
-          echo "SECRET_KEY=${SECRET_KEY}" >> .env
-          echo "ALLOWED_HOSTS=${ALLOWED_HOSTS}" >> .env
-          echo "DB_NAME=${DB_NAME}" >> .env
-          echo "DB_USER=${DB_USER}" >> .env
-          echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
-          echo "DATABASE_URL=${DATABASE_URL}" >> .env
-          echo ".env file updated."
-          
-          # Install Docker and Docker Compose if not already installed
-          if ! command -v docker &> /dev/null; then
-            echo "Installing Docker..."
-            sudo apt-get update
-            sudo apt-get install -y docker.io
-          else
-            echo "Docker is already installed."
-          fi
-
-          if ! command -v docker-compose &> /dev/null; then
-            echo "Installing Docker Compose..."
-            sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-            sudo chmod +x /usr/local/bin/docker-compose
-          else
-            echo "Docker Compose is already installed."
-          fi
-
-          echo "Current directory contents:"
-          ls -la
-
-          echo "Pulling latest Docker images..."
-          sudo docker-compose pull
-
-          echo "Starting Docker containers..."
-          sudo docker-compose up -d
-
-          echo "Deployment process completed."
-
-          # Install and run Certbot for SSL
-          if ! command -v certbot &> /dev/null; then
-            sudo apt-get update
-            sudo apt-get install -y certbot python3-certbot-standalone
-          fi
-
-          # Stop Nginx before running Certbot
-          sudo docker-compose stop nginx
-
-          # Update Certbot command
-          sudo certbot certonly --standalone -d paragoni.space -d www.paragoni.space --non-interactive --agree-tos -m m.chuvtaeva@gmail.com
-
-          # Ensure the system-wide Nginx configuration is updated
-          sudo cp /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo/paragoni.space /etc/nginx/sites-available/
-          sudo ln -sf /etc/nginx/sites-available/paragoni.space /etc/nginx/sites-enabled/
-          sudo nginx -t
-          sudo systemctl reload nginx
-
-          echo "Checking what's using port 80..."
-          sudo lsof -i :80
-
-          echo "Stopping system-wide Nginx if it's running..."
-          sudo systemctl stop nginx
-
-          echo "Stopping any existing Docker containers..."
-          sudo docker-compose down
-
-          # Update Apache configuration
-          sudo cp /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo/paragoni.space.conf /etc/apache2/sites-available/
-          sudo a2ensite paragoni.space.conf
-          sudo a2enmod proxy proxy_http ssl
-          sudo apache2ctl configtest
-          if ! sudo systemctl restart apache2; then
-            echo "Warning: Failed to restart Apache. Will continue deployment, but please check Apache configuration manually."
-          fi
+          git pull origin main
+          docker-compose down
+          docker-compose up -d --build
