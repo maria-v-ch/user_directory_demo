@@ -26,6 +26,4 @@ COPY . .
 
 ENV DJANGO_SETTINGS_MODULE=user_directory.settings
 
-RUN python manage.py collectstatic --noinput
-
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "user_directory.wsgi:application"]

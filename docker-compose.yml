@@ -3,7 +3,9 @@ version: '3.8'
 services:
   web:
     build: .
-    command: gunicorn user_directory.wsgi:application --bind 0.0.0.0:8000
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             gunicorn user_directory.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - .:/code
       - static_volume:/code/staticfiles
