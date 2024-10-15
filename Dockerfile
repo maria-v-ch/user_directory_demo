@@ -1,31 +1,29 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9
+# Build stage
+FROM python:3.9-slim as builder
 
-# Set environment variables
+WORKDIR /app
+
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Set work directory
-WORKDIR /code
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc
 
-# Install dependencies
-COPY requirements.txt /code/
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-RUN pip install gunicorn
+COPY requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
 
-# Copy project
-COPY . /code/
+# Final stage
+FROM python:3.9-slim
 
-# Create necessary directories
-RUN mkdir -p /code/staticfiles /code/static
+WORKDIR /app
 
-# Collect static files
+COPY --from=builder /app/wheels /wheels
+COPY --from=builder /app/requirements.txt .
+
+RUN pip install --no-cache /wheels/*
+
+COPY . .
+
 RUN python manage.py collectstatic --noinput
 
-# Make entrypoint.sh executable
-COPY entrypoint.sh /code/
-RUN chmod +x /code/entrypoint.sh
-
-# Run entrypoint.sh
-ENTRYPOINT ["/code/entrypoint.sh"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "user_directory.wsgi:application"]
