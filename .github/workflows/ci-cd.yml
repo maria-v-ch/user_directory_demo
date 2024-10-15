@@ -153,10 +153,35 @@ jobs:
           # Install and run Certbot for SSL
           if ! command -v certbot &> /dev/null; then
             sudo apt-get update
-            sudo apt-get install -y certbot python3-certbot-nginx
+            sudo apt-get install -y certbot python3-certbot-standalone
           fi
-  
-          sudo certbot --nginx -d paragoni.space -d www.paragoni.space --non-interactive --agree-tos -m your-email@example.com
-  
-          # Restart Nginx to apply changes
-          sudo systemctl restart nginx
+
+          # Stop Nginx before running Certbot
+          sudo docker-compose stop nginx
+
+          # Update Certbot command
+          sudo certbot certonly --standalone -d paragoni.space -d www.paragoni.space --non-interactive --agree-tos -m m.chuvtaeva@gmail.com
+
+          # Ensure the system-wide Nginx configuration is updated
+          sudo cp /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo/paragoni.space /etc/nginx/sites-available/
+          sudo ln -sf /etc/nginx/sites-available/paragoni.space /etc/nginx/sites-enabled/
+          sudo nginx -t
+          sudo systemctl reload nginx
+
+          echo "Checking what's using port 80..."
+          sudo lsof -i :80
+
+          echo "Stopping system-wide Nginx if it's running..."
+          sudo systemctl stop nginx
+
+          echo "Stopping any existing Docker containers..."
+          sudo docker-compose down
+
+          # Update Apache configuration
+          sudo cp /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo/paragoni.space.conf /etc/apache2/sites-available/
+          sudo a2ensite paragoni.space.conf
+          sudo a2enmod proxy proxy_http ssl
+          sudo apache2ctl configtest
+          if ! sudo systemctl restart apache2; then
+            echo "Warning: Failed to restart Apache. Will continue deployment, but please check Apache configuration manually."
+          fi
