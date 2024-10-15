@@ -41,7 +41,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = env('ALLOWED_HOSTS')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 
 # Application definition
@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'user_directory.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db_url('DATABASE_URL', default='postgres://postgres:postgrespassword@db:5432/postgres')
+    'default': env.db('DATABASE_URL', default='postgres://postgres:postgrespassword@db:5432/postgres')
 }
 
 
