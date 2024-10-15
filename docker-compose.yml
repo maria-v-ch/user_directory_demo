@@ -10,6 +10,7 @@ services:
     expose:
       - 8000
     environment:
+      - DJANGO_SETTINGS_MODULE=user_directory.settings
       - DEBUG=${DEBUG}
       - SECRET_KEY=${SECRET_KEY}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}

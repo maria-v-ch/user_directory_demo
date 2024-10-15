@@ -1,10 +1,10 @@
 # Build stage
-FROM python:3.9-slim as builder
+FROM python:3.9-slim AS builder
 
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc
@@ -23,6 +23,8 @@ COPY --from=builder /app/requirements.txt .
 RUN pip install --no-cache /wheels/*
 
 COPY . .
+
+ENV DJANGO_SETTINGS_MODULE=user_directory.settings
 
 RUN python manage.py collectstatic --noinput
 
