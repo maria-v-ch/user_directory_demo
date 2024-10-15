@@ -10,6 +10,26 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DEBUG: False
+      ALLOWED_HOSTS: localhost,127.0.0.1,0.0.0.0,192.168.0.102
+      DB_NAME: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgrespassword
+      DATABASE_URL: postgres://postgres:postgrespassword@db:5432/postgres
+    
+    services:
+      db:
+        image: postgres:13
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgrespassword
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
     - uses: actions/checkout@v2
     
