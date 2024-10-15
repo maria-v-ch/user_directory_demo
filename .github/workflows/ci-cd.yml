@@ -43,9 +43,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     
+    - name: Run migrations
+      run: python manage.py migrate
+    
     - name: Run tests
-      run: |
-        pytest
+      run: pytest
 
   build-and-push-docker:
     needs: build-and-test
