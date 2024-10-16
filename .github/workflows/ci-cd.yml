@@ -145,7 +145,7 @@ jobs:
 
           # Wait for database to be ready
           echo "Waiting for database..."
-          sudo docker-compose exec -T web ./wait-for-it.sh db
+          sudo docker-compose exec -T web ./wait-for-it.sh db:5432
 
           # Run migrations
           echo "Running migrations..."
