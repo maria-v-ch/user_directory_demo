@@ -192,3 +192,7 @@ jobs:
           # Make wait-for-it.sh executable
           echo "Making wait-for-it.sh executable..."
           chmod +x wait-for-it.sh
+
+          # Start Docker containers
+          echo "Starting Docker containers..."
+          sudo docker-compose up -d --remove-orphans
