@@ -143,13 +143,9 @@ jobs:
           echo "Starting Docker containers..."
           sudo docker-compose up -d --remove-orphans
 
-          # Print container status
-          echo "Container status:"
-          sudo docker-compose ps
-
-          # List Docker volumes
-          echo "Docker volumes:"
-          sudo docker volume ls
+          # Wait for database to be ready
+          echo "Waiting for database..."
+          sudo docker-compose exec -T web ./wait-for-it.sh db
 
           # Run migrations
           echo "Running migrations..."

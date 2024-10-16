@@ -3,17 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
-    command: >
-      sh -c "
-        while ! nc -z db 5432; do
-          echo 'Waiting for database...';
-          sleep 1;
-        done;
-        echo 'Database is up!';
-        python manage.py migrate &&
-        python manage.py collectstatic --noinput &&
-        gunicorn user_directory.wsgi:application --bind 0.0.0.0:8000
-      "
+    command: ["./wait-for-it.sh", "db", "python", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
       - .:/code
       - static_volume:/code/staticfiles
@@ -51,7 +41,7 @@ services:
 
 networks:
   app_network:
-    name: app_network
+    driver: bridge
 
 volumes:
   postgres_data:
