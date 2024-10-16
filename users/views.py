@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from rest_framework import generics, permissions
-from rest_framework.permissions import AllowAny  # Add this import
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import UserRegistrationSerializer, CustomTokenObtainPairSerializer, UserSerializer
 from django.contrib.auth import get_user_model
@@ -87,7 +87,7 @@ class AdminUserListView(generics.ListCreateAPIView):
 class AdminUserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsOwnerOrAdmin]  # Use the custom permission we defined
+    permission_classes = [IsOwnerOrAdmin]
 
 # Error handling views
 def bad_request(request, exception=None):

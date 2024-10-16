@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth import get_user_model
+from django.conf import settings
 
 User = get_user_model()
 
@@ -28,3 +29,8 @@ def test_create_superuser():
     assert admin_user.is_active
     assert admin_user.is_staff
     assert admin_user.is_superuser
+
+@pytest.mark.parametrize('debug_value', [True, False])
+def test_debug_setting(debug_value):
+    settings.DEBUG = debug_value
+    assert settings.DEBUG == debug_value

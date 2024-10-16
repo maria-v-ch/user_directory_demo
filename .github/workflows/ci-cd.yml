@@ -48,7 +48,7 @@ jobs:
         pytest
 
   deploy:
-    needs: build-and-test
+    needs: build-and-push-docker
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     
@@ -60,7 +60,37 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
+          # Navigate to project directory
           cd /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo
+
+          # Pull latest changes
           git pull origin main
-          docker-compose down
-          docker-compose up -d --build
+
+          # Copy Apache configuration
+          sudo cp paragoni.space.conf /etc/apache2/sites-available/
+          sudo a2ensite paragoni.space.conf
+
+          # Ensure SSL certificates are in place (you might need to adjust this based on your exact setup)
+          sudo certbot --nginx -d paragoni.space -d www.paragoni.space --non-interactive --agree-tos -m m.chuvtaeva@gmail.com
+
+          # Reload Apache
+          sudo systemctl reload apache2
+
+          # Set environment variables
+          export DEBUG=False
+          export SECRET_KEY='${{ secrets.SECRET_KEY }}'
+          export ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,paragoni.space,www.paragoni.space
+          export DB_NAME=${{ secrets.DB_NAME }}
+          export DB_USER=${{ secrets.DB_USER }}
+          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          export DATABASE_URL=${{ secrets.DATABASE_URL }}
+
+          # Pull and start Docker containers
+          docker-compose pull
+          docker-compose up -d
+
+          # Run migrations
+          docker-compose exec -T web python manage.py migrate
+
+          # Collect static files
+          docker-compose exec -T web python manage.py collectstatic --noinput
