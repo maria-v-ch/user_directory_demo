@@ -48,7 +48,7 @@ jobs:
         pytest
 
   deploy:
-    needs: build-and-push-docker
+    needs: build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     
