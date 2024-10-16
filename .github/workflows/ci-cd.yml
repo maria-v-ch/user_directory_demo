@@ -188,3 +188,7 @@ jobs:
           sudo docker-compose exec -T web python manage.py collectstatic --noinput
 
           echo "Deployment process completed."
+
+          # Make wait-for-it.sh executable
+          echo "Making wait-for-it.sh executable..."
+          chmod +x wait-for-it.sh
