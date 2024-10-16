@@ -26,4 +26,7 @@ COPY . .
 
 ENV DJANGO_SETTINGS_MODULE=user_directory.settings
 
+# Create necessary directories
+RUN mkdir -p /code/staticfiles /code/static
+
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "user_directory.wsgi:application"]

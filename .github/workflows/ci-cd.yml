@@ -60,12 +60,13 @@ jobs:
         DB_NAME: ${{ secrets.DB_NAME }}
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_PORT: ${{ secrets.DB_PORT }}
       with:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
-        envs: SECRET_KEY,DB_NAME,DB_USER,DB_PASSWORD,DATABASE_URL
+        envs: SECRET_KEY,DB_NAME,DB_USER,DB_PASSWORD,DB_HOST,DB_PORT
         script: |
           set -e
           echo "Starting deployment process..."
@@ -95,7 +96,9 @@ jobs:
           DB_NAME="${DB_NAME}"
           DB_USER="${DB_USER}"
           DB_PASSWORD="${DB_PASSWORD}"
-          DATABASE_URL="${DATABASE_URL}"
+          DB_HOST="${DB_HOST}"
+          DB_PORT="${DB_PORT}"
+          DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
           EOF
 
           echo "Created .env file"

@@ -4,32 +4,24 @@ services:
   web:
     build: .
     command: >
-      sh -c "python manage.py collectstatic --noinput &&
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
              gunicorn user_directory.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - .:/code
       - static_volume:/code/staticfiles
     expose:
       - 8000
-    environment:
-      - DJANGO_SETTINGS_MODULE=user_directory.settings
-      - DEBUG=${DEBUG}
-      - SECRET_KEY=${SECRET_KEY}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DATABASE_URL=${DATABASE_URL}
+    env_file:
+      - .env
     depends_on:
       - db
   db:
     image: postgres:13
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    env_file:
+      - .env
   nginx:
     image: nginx:latest
     ports:
