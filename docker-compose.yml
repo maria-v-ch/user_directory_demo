@@ -3,7 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
-    command: sh -c "/app/wait-for-it.sh db:5432 -- gunicorn --bind 0.0.0.0:8000 user_directory.wsgi:application"
+    command: sh -c "/app/wait-for-it.sh db 5432 -- gunicorn --bind 0.0.0.0:8000 user_directory.wsgi:application"
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
