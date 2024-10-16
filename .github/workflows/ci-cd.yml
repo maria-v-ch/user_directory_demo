@@ -62,7 +62,7 @@ jobs:
         DB_NAME: ${{ secrets.DB_NAME }}
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_HOST: db
         DB_PORT: ${{ secrets.DB_PORT }}
       with:
         host: ${{ secrets.SERVER_HOST }}
