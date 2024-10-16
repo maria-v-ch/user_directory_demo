@@ -192,3 +192,18 @@ jobs:
   
           echo "Checking web container's ability to ping db..."
           sudo docker-compose exec -T web ping -c 4 db
+
+          # Create static directory
+          mkdir -p static
+
+          # Wait for database to be ready
+          echo "Waiting for database..."
+          until sudo docker-compose exec -T db pg_isready; do
+            echo "Database is unavailable - sleeping"
+            sleep 1
+          done
+          echo "Database is up - executing command"
+
+          # Run migrations
+          echo "Running migrations..."
+          sudo docker-compose exec -T web python manage.py migrate

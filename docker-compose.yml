@@ -25,8 +25,6 @@ services:
       - db
     networks:
       - app_network
-    environment:
-      - DB_HOST=db
 
   db:
     image: postgres:13
