@@ -25,6 +25,8 @@ services:
       - db
     networks:
       - app_network
+    environment:
+      - DB_HOST=user_directory_demo_db_1
 
   db:
     image: postgres:13
@@ -51,6 +53,7 @@ services:
 
 networks:
   app_network:
+    name: user_directory_demo_app_network
     driver: bridge
 
 volumes:

@@ -98,9 +98,9 @@ jobs:
           DB_NAME="${DB_NAME}"
           DB_USER="${DB_USER}"
           DB_PASSWORD="${DB_PASSWORD}"
-          DB_HOST="${DB_HOST}"
+          DB_HOST=user_directory_demo_db_1
           DB_PORT="${DB_PORT}"
-          DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+          DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@user_directory_demo_db_1:${DB_PORT}/${DB_NAME}
           EOF
 
           echo "Created .env file"
@@ -166,5 +166,13 @@ jobs:
           # Print Docker network information
           echo "Docker network information:"
           sudo docker network inspect app_network
+
+          # Add a step to inspect the Docker network
+          echo "Inspecting Docker network..."
+          sudo docker network inspect user_directory_demo_app_network
+
+          # Add a step to check the /etc/hosts file in the web container
+          echo "Checking /etc/hosts in web container..."
+          sudo docker-compose exec -T web cat /etc/hosts
 
           echo "Deployment process completed."
