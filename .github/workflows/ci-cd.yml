@@ -141,6 +141,10 @@ jobs:
           echo "Container status:"
           sudo docker-compose ps
 
+          # List Docker volumes
+          echo "Docker volumes:"
+          sudo docker volume ls
+
           # Run migrations
           echo "Running migrations..."
           sudo docker-compose exec -T web python manage.py migrate
@@ -148,5 +152,9 @@ jobs:
           # Collect static files
           echo "Collecting static files..."
           sudo docker-compose exec -T web python manage.py collectstatic --noinput
+
+          # Print database container logs
+          echo "Database container logs:"
+          sudo docker-compose logs db
 
           echo "Deployment process completed."
