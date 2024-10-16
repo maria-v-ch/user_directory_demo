@@ -3,7 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
-    command: sh -c "./wait-for-it.sh db:5432 -- python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "./wait-for-it.sh db -- python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/code
       - static_volume:/code/staticfiles
@@ -22,6 +22,10 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - .env
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     networks:
       - app_network
 

@@ -101,9 +101,16 @@ jobs:
           DB_HOST=db
           DB_PORT="${DB_PORT}"
           DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_NAME}
+          POSTGRES_DB=${DB_NAME}
+          POSTGRES_USER=${DB_USER}
+          POSTGRES_PASSWORD=${DB_PASSWORD}
           EOF
 
           echo "Created .env file"
+
+          # Check .env file contents (mask sensitive information)
+          echo "Checking .env file contents:"
+          sed 's/\(SECRET_KEY=\).*/\1***/' .env | sed 's/\(DB_PASSWORD=\).*/\1***/' | sed 's/\(POSTGRES_PASSWORD=\).*/\1***/'
 
           # Check Docker installation
           if ! command -v docker &> /dev/null; then
@@ -143,9 +150,13 @@ jobs:
           echo "Starting Docker containers..."
           sudo docker-compose up -d --remove-orphans
 
+          # Check database logs
+          echo "Checking database logs..."
+          sudo docker-compose logs db
+
           # Wait for database to be ready
           echo "Waiting for database..."
-          sudo docker-compose exec -T web ./wait-for-it.sh db:5432
+          sudo docker-compose exec -T web ./wait-for-it.sh db
 
           # Run migrations
           echo "Running migrations..."
