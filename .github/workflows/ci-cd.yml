@@ -154,9 +154,9 @@ jobs:
           echo "Checking container status..."
           sudo docker-compose ps
 
-          # Check database logs
-          echo "Checking database logs..."
-          sudo docker-compose logs db
+          # Check logs for all containers
+          echo "Checking logs for all containers..."
+          sudo docker-compose logs
 
           # Wait for database to be ready
           echo "Waiting for database..."
@@ -175,21 +175,16 @@ jobs:
             exit 1
           fi
 
-          # Run migrations
-          echo "Running migrations..."
-          sudo docker-compose exec -T web python manage.py migrate
-
-          # Create static directory
-          mkdir -p static
-
-          # Wait for database to be ready
-          echo "Waiting for database..."
-          until sudo docker-compose exec -T db pg_isready; do
-            echo "Database is unavailable - sleeping"
-            sleep 10
-          done
-          echo "Database is up - executing command"
+          # Check web container logs
+          echo "Checking web container logs..."
+          sudo docker-compose logs web
 
           # Run migrations
           echo "Running migrations..."
           sudo docker-compose exec -T web python manage.py migrate
+
+          # Collect static files
+          echo "Collecting static files..."
+          sudo docker-compose exec -T web python manage.py collectstatic --noinput
+
+          echo "Deployment process completed."

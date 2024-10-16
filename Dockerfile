@@ -29,4 +29,8 @@ ENV DJANGO_SETTINGS_MODULE=user_directory.settings
 # Create necessary directories
 RUN mkdir -p /code/staticfiles /code/static
 
+# Copy wait-for-it.sh and make it executable
+COPY wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
+
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "user_directory.wsgi:application"]
