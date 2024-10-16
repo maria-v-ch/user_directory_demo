@@ -55,10 +55,17 @@ jobs:
     steps:
     - name: Deploy to server
       uses: appleboy/ssh-action@master
+      env:
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
       with:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
+        envs: SECRET_KEY,DB_NAME,DB_USER,DB_PASSWORD,DATABASE_URL
         script: |
           # Navigate to project directory
           cd /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo
@@ -76,14 +83,16 @@ jobs:
           # Reload Apache
           sudo systemctl reload apache2
 
-          # Set environment variables (escaping special characters)
-          export DEBUG=False
-          export SECRET_KEY='${{ secrets.SECRET_KEY }}'
-          export ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,paragoni.space,www.paragoni.space
-          export DB_NAME='${{ secrets.DB_NAME }}'
-          export DB_USER='${{ secrets.DB_USER }}'
-          export DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
-          export DATABASE_URL='${{ secrets.DATABASE_URL }}'
+          # Create .env file with environment variables
+          cat << EOF > .env
+          DEBUG=False
+          SECRET_KEY='${SECRET_KEY}'
+          ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,paragoni.space,www.paragoni.space
+          DB_NAME='${DB_NAME}'
+          DB_USER='${DB_USER}'
+          DB_PASSWORD='${DB_PASSWORD}'
+          DATABASE_URL='${DATABASE_URL}'
+          EOF
 
           # Ensure Docker and Docker Compose are available
           if ! command -v docker &> /dev/null; then
