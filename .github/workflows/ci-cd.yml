@@ -67,8 +67,12 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         envs: SECRET_KEY,DB_NAME,DB_USER,DB_PASSWORD,DATABASE_URL
         script: |
+          set -e
+          echo "Starting deployment process..."
+          
           # Navigate to project directory
           cd /home/${{ secrets.SERVER_USERNAME }}/user_directory_demo
+          echo "Current directory: $(pwd)"
 
           # Pull latest changes
           git pull origin main
@@ -94,25 +98,39 @@ jobs:
           DATABASE_URL="${DATABASE_URL}"
           EOF
 
-          # Ensure Docker and Docker Compose are available
-          if ! command -v docker &> /dev/null; then
-            echo "Docker not found, installing..."
-            sudo apt-get update
-            sudo apt-get install -y docker.io
-          fi
+          echo "Created .env file"
 
-          if ! command -v docker-compose &> /dev/null; then
-            echo "Docker Compose not found, installing..."
-            sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-            sudo chmod +x /usr/local/bin/docker-compose
-          fi
+          # Update Docker and Docker Compose
+          echo "Updating Docker and Docker Compose..."
+          sudo apt-get update
+          sudo apt-get install -y docker.io docker-compose
 
-          # Pull and start Docker containers
+          # Print Docker and Docker Compose versions
+          docker --version
+          docker-compose --version
+
+          # Stop and remove existing containers
+          echo "Stopping and removing existing containers..."
+          sudo docker-compose down -v
+
+          # Pull latest images
+          echo "Pulling latest Docker images..."
           sudo docker-compose pull
+
+          # Start Docker containers
+          echo "Starting Docker containers..."
           sudo docker-compose up -d --remove-orphans
 
+          # Print container status
+          echo "Container status:"
+          sudo docker-compose ps
+
           # Run migrations
+          echo "Running migrations..."
           sudo docker-compose exec -T web python manage.py migrate
 
           # Collect static files
+          echo "Collecting static files..."
           sudo docker-compose exec -T web python manage.py collectstatic --noinput
+
+          echo "Deployment process completed."
