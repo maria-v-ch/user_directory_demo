@@ -16,15 +16,7 @@ from pathlib import Path
 from datetime import timedelta
 import logging
 
-# Initialize environ
-env = environ.Env(
-    DEBUG=(bool, False),
-    SECRET_KEY=(str, 'default-secret-key'),
-    ALLOWED_HOSTS=(list, []),
-    DB_NAME=(str, 'postgres'),
-    DB_USER=(str, 'postgres'),
-    DB_PASSWORD=(str, 'postgrespassword'),
-)
+env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,7 +33,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = env('ALLOWED_HOSTS')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 
 # Application definition
