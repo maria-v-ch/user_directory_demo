@@ -7,10 +7,11 @@ host="$1"
 shift
 cmd="$@"
 
+echo "Waiting for PostgreSQL to become available..."
 until PGPASSWORD=$DB_PASSWORD psql -h "$host" -U "$DB_USER" -d "$DB_NAME" -c '\q'; do
-  >&2 echo "Postgres is unavailable - sleeping"
-  sleep 5
+  >&2 echo "PostgreSQL is unavailable - sleeping"
+  sleep 10
 done
 
->&2 echo "Postgres is up - executing command"
+>&2 echo "PostgreSQL is up - executing command"
 exec $cmd

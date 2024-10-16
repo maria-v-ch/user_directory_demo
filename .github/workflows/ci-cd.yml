@@ -150,55 +150,34 @@ jobs:
           echo "Starting Docker containers..."
           sudo docker-compose up -d --remove-orphans
 
+          # Check container status
+          echo "Checking container status..."
+          sudo docker-compose ps
+
           # Check database logs
           echo "Checking database logs..."
           sudo docker-compose logs db
 
           # Wait for database to be ready
           echo "Waiting for database..."
-          sudo docker-compose exec -T web ./wait-for-it.sh db
+          for i in {1..30}; do
+            if sudo docker-compose exec -T db pg_isready -U ${DB_USER} -d ${DB_NAME}; then
+              echo "Database is ready!"
+              break
+            fi
+            echo "Waiting for database... (Attempt $i/30)"
+            sleep 10
+          done
+
+          # Check if database is ready
+          if ! sudo docker-compose exec -T db pg_isready -U ${DB_USER} -d ${DB_NAME}; then
+            echo "Database failed to become ready. Exiting."
+            exit 1
+          fi
 
           # Run migrations
           echo "Running migrations..."
           sudo docker-compose exec -T web python manage.py migrate
-
-          # Collect static files
-          echo "Collecting static files..."
-          sudo docker-compose exec -T web python manage.py collectstatic --noinput
-
-          # Print database container logs
-          echo "Database container logs:"
-          sudo docker-compose logs db
-
-          # Print Docker network information
-          echo "Docker network information:"
-          sudo docker network inspect app_network
-
-          # Add a step to inspect the Docker network
-          echo "Inspecting Docker network..."
-          sudo docker network inspect user_directory_demo_app_network
-
-          # Add a step to check the /etc/hosts file in the web container
-          echo "Checking /etc/hosts in web container..."
-          sudo docker-compose exec -T web cat /etc/hosts
-
-          echo "Deployment process completed."
-
-          # Add these steps after starting the containers
-          echo "Checking Docker network..."
-          sudo docker network ls
-  
-          echo "Inspecting app_network..."
-          sudo docker network inspect app_network
-  
-          echo "Checking container IP addresses..."
-          sudo docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(sudo docker-compose ps -q)
-  
-          echo "Checking web container's /etc/hosts..."
-          sudo docker-compose exec -T web cat /etc/hosts
-  
-          echo "Checking web container's ability to ping db..."
-          sudo docker-compose exec -T web ping -c 4 db
 
           # Create static directory
           mkdir -p static
