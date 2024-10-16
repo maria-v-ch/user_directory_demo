@@ -23,12 +23,18 @@ services:
       - .env
     depends_on:
       - db
+    networks:
+      - app_network
+
   db:
     image: postgres:13
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - .env
+    networks:
+      - app_network
+
   nginx:
     image: nginx:latest
     ports:
@@ -40,6 +46,12 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt
     depends_on:
       - web
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
 
 volumes:
   postgres_data:
