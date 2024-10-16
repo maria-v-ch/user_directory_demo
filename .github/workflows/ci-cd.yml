@@ -200,7 +200,7 @@ jobs:
           echo "Waiting for database..."
           until sudo docker-compose exec -T db pg_isready; do
             echo "Database is unavailable - sleeping"
-            sleep 1
+            sleep 10
           done
           echo "Database is up - executing command"
 
