@@ -208,8 +208,20 @@ jobs:
 
     - name: Build and push Docker images
       run: |
-        cd user_directory_demo  # Change to the directory containing docker-compose.yml
-        docker-compose build
-        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-        docker-compose push
-
+        pwd
+        ls -R
+        if [ -f "docker-compose.yml" ]; then
+          echo "docker-compose.yml found in current directory"
+          docker-compose build
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          docker-compose push
+        elif [ -f "user_directory_demo/docker-compose.yml" ]; then
+          echo "docker-compose.yml found in user_directory_demo directory"
+          cd user_directory_demo
+          docker-compose build
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          docker-compose push
+        else
+          echo "Error: docker-compose.yml not found"
+          exit 1
+        fi
