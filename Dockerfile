@@ -48,4 +48,6 @@ RUN chmod +x /app/wait-for-it.sh
 # Print installed packages for debugging
 RUN pip freeze
 
+ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages:$PYTHONPATH
+
 CMD ["gunicorn", "user_directory.wsgi:application", "--bind", "0.0.0.0:8000"]
