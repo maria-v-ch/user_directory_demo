@@ -214,6 +214,8 @@ jobs:
         ls -la
         echo "Searching for docker-compose.yml:"
         find . -name docker-compose.yml
+        echo "Listing all files in the repository:"
+        find . -type f
         if [ -f "docker-compose.yml" ]; then
           echo "docker-compose.yml found in current directory"
           docker-compose build
@@ -227,7 +229,5 @@ jobs:
           docker-compose push
         else
           echo "Error: docker-compose.yml not found"
-          echo "Listing all files in the repository:"
-          find . -type f
           exit 1
         fi
