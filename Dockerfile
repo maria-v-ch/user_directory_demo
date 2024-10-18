@@ -48,4 +48,4 @@ RUN chmod +x /app/wait-for-it.sh
 # Print installed packages for debugging
 RUN pip freeze
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "user_directory.wsgi:application"]
+CMD ["gunicorn", "user_directory.wsgi:application", "--bind", "0.0.0.0:8000"]
