@@ -216,6 +216,8 @@ jobs:
         find . -name docker-compose.yml
         echo "Listing all files in the repository:"
         find . -type f
+        echo "Listing all directories in the repository:"
+        find . -type d
         if [ -f "docker-compose.yml" ]; then
           echo "docker-compose.yml found in current directory"
           docker-compose build
