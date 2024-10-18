@@ -138,17 +138,11 @@ jobs:
           echo "Stopping and removing existing containers..."
           sudo docker-compose down -v
 
-          # Pull latest images
-          echo "Pulling latest Docker images..."
+          # Pull the latest images
           sudo docker-compose pull
 
-          # Create Docker network
-          echo "Creating Docker network..."
-          sudo docker network create app_network || true
-
-          # Start Docker containers
-          echo "Starting Docker containers..."
-          sudo docker-compose up -d --remove-orphans
+          # Restart the services
+          sudo docker-compose up -d --build
 
           # Check container status
           echo "Checking container status..."
