@@ -1,5 +1,6 @@
 services:
   web:
+    image: mariavch/user-directory-web:latest
     build: .
     command: sh -c "/app/wait-for-it.sh db 5432 gunicorn --bind 0.0.0.0:8000 user_directory.wsgi:application"
     volumes:

@@ -33,7 +33,7 @@ RUN apt-get update && \
 COPY --from=builder /app/wheels /wheels
 COPY --from=builder /app/requirements.txt .
 RUN pip install --no-cache-dir --find-links=/wheels -r requirements.txt && \
-    pip install --no-cache-dir drf-yasg
+    pip install drf-yasg==1.21.7
 
 # Copy project
 COPY . .
