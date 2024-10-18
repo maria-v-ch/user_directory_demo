@@ -28,10 +28,10 @@ def test_user_registration_view(client):
     response = client.post(url, {
         'username': 'newuser',
         'email': 'newuser@example.com',
-        'password1': 'newuserpass123',
+        'password': 'newuserpass123',
         'password2': 'newuserpass123',
         'first_name': 'New',
         'last_name': 'User'
     })
-    assert response.status_code in [200, 302]  # Accept either OK or redirect
+    assert response.status_code in [200, 201, 302]  # Accept either OK, Created, or redirect
     assert User.objects.filter(username='newuser').exists()

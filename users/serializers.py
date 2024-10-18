@@ -25,20 +25,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        user = User.objects.create(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            phone=validated_data.get('phone', ''),
-            address=validated_data.get('address', '')
-        )
-        user.set_password(validated_data['password'])
-        user.save()
-        
-        user_group, created = Group.objects.get_or_create(name='Regular Users')
-        user.groups.add(user_group)
-        
+        validated_data.pop('password2')
+        user = User.objects.create_user(**validated_data)
         return user
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

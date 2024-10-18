@@ -20,6 +20,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 # Create your views here.
 
@@ -57,11 +58,13 @@ class UserListView(BaseView, LoginRequiredMixin, ListView):
     model = User
     template_name = 'users/user_list.html'
     context_object_name = 'users'
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
 
 class UserDetailView(BaseView, LoginRequiredMixin, DetailView):
     model = User
     template_name = 'users/user_detail.html'
     context_object_name = 'user'
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
