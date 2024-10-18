@@ -21,6 +21,7 @@ from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 # Create your views here.
 
@@ -158,6 +159,7 @@ def server_error(request):
     return render(request, 'errors/500.html', status=500)
 
 class UserRegistrationView(APIView):
+    throttle_classes = [AnonRateThrottle]
     @swagger_auto_schema(
         request_body=UserRegistrationSerializer,
         responses={201: UserSerializer(), 400: "Bad Request"}
@@ -172,6 +174,7 @@ class UserRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserLoginView(TokenObtainPairView):
+    throttle_classes = [AnonRateThrottle]
     @swagger_auto_schema(
         request_body=CustomTokenObtainPairSerializer,
         responses={200: openapi.Response("Successful login", CustomTokenObtainPairSerializer)}
@@ -206,6 +209,7 @@ class UserDetailView(generics.RetrieveAPIView):
         return super().get(request, *args, **kwargs)
 
 class UserUpdateView(generics.UpdateAPIView):
+    throttle_classes = [UserRateThrottle]
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsOwnerOrAdmin]
