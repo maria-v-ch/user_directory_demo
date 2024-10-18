@@ -32,7 +32,8 @@ RUN apt-get update && \
 # Copy wheels from builder stage and install
 COPY --from=builder /app/wheels /wheels
 COPY --from=builder /app/requirements.txt .
-RUN pip install --no-cache-dir --find-links=/wheels -r requirements.txt
+RUN pip install --no-cache-dir --find-links=/wheels -r requirements.txt && \
+    pip install --no-cache-dir drf-yasg
 
 # Copy project
 COPY . .

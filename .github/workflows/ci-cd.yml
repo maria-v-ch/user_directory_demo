@@ -203,3 +203,8 @@ jobs:
           else
             echo "Warning: Port 9093 is already in use. Prometheus may not start correctly."
           fi
+
+  - name: Build and push Docker images
+    run: |
+      docker-compose build
+      docker-compose push
