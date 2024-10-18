@@ -33,7 +33,8 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
     
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -104,6 +105,7 @@ jobs:
           POSTGRES_DB=${DB_NAME}
           POSTGRES_USER=${DB_USER}
           POSTGRES_PASSWORD=${DB_PASSWORD}
+          GRAFANA_ADMIN_PASSWORD="${GRAFANA_ADMIN_PASSWORD}"
           EOF
 
           echo "Created .env file"
@@ -206,6 +208,8 @@ jobs:
 
     - name: Build and push Docker images
       run: |
+        cd user_directory_demo  # Change to the directory containing docker-compose.yml
         docker-compose build
         echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
         docker-compose push
+
