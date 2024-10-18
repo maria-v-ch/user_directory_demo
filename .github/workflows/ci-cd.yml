@@ -210,33 +210,35 @@ jobs:
         docker-compose --version
 
     - name: Build and push Docker images
+      env:
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
       run: |
         echo "Current working directory:"
         pwd
+        echo "Creating .env file"
+        cat << EOF > .env
+        DEBUG=False
+        SECRET_KEY=${{ secrets.SECRET_KEY }}
+        ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,paragoni.space,www.paragoni.space
+        DB_NAME=${{ secrets.DB_NAME }}
+        DB_USER=${{ secrets.DB_USER }}
+        DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+        DB_HOST=db
+        DB_PORT=${{ secrets.DB_PORT }}
+        DATABASE_URL=postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@db:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}
+        GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+        EOF
         echo "Directory contents:"
         ls -la
         echo "Searching for docker-compose.yml:"
         find . -name docker-compose.yml
-        echo "Listing all files in the repository:"
-        find . -type f
-        echo "Listing all directories in the repository:"
-        find . -type d
-        echo "Git status:"
-        git status
-        echo "Git log (last 5 commits):"
-        git log -n 5 --oneline
-        if [ -f "docker-compose.yml" ]; then
-          echo "docker-compose.yml found in current directory"
-          docker-compose build
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-          docker-compose push
-        elif [ -f "user_directory_demo/docker-compose.yml" ]; then
-          echo "docker-compose.yml found in user_directory_demo directory"
-          cd user_directory_demo
-          docker-compose build
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-          docker-compose push
-        else
-          echo "Error: docker-compose.yml not found"
-          exit 1
-        fi
+        echo "Docker Compose version:"
+        docker-compose --version
+        echo "Building Docker images:"
+        docker-compose build
+        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+        echo "Pushing Docker images:"
+        docker-compose push
