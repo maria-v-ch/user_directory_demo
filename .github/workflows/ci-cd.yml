@@ -200,6 +200,9 @@ jobs:
             echo "Warning: Port 9093 is already in use. Prometheus may not start correctly."
           fi
 
+    - name: Checkout code
+      uses: actions/checkout@v2
+
     - name: Set up Docker Compose
       run: |
         sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -218,6 +221,10 @@ jobs:
         find . -type f
         echo "Listing all directories in the repository:"
         find . -type d
+        echo "Git status:"
+        git status
+        echo "Git log (last 5 commits):"
+        git log -n 5 --oneline
         if [ -f "docker-compose.yml" ]; then
           echo "docker-compose.yml found in current directory"
           docker-compose build
