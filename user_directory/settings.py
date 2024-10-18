@@ -45,16 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # Third-party apps
+    'users',
     'rest_framework',
     'rest_framework_simplejwt',
     'widget_tweaks',
     'drf_yasg',
     'django_prometheus',
-    
-    # Local apps
-    'users',  # Add your users app here
 ]
 
 MIDDLEWARE = [
