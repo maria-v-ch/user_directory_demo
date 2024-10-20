@@ -152,3 +152,7 @@ docker-compose.override.yml
 
 # Database
 postgres_data/
+
+# Logs
+logs/
+*.log

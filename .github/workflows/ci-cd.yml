@@ -81,6 +81,11 @@ jobs:
           # Pull latest changes
           git pull origin main
 
+          # Create logs directory and set permissions
+          mkdir -p logs
+          chmod 777 logs
+          echo "Created logs directory with appropriate permissions"
+
           # Copy Apache configuration
           sudo cp paragoni.space.conf /etc/apache2/sites-available/
           sudo a2ensite paragoni.space.conf

@@ -6,6 +6,7 @@ services:
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
+      - ./logs:/app/logs
     expose:
       - 8000
     env_file:

@@ -39,7 +39,8 @@ RUN pip install --no-cache-dir --find-links=/wheels -r requirements.txt && \
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p /app/staticfiles /app/static
+RUN mkdir -p /app/staticfiles /app/static /app/logs && \
+    chmod 777 /app/logs
 
 # Copy wait-for-it.sh and make it executable
 COPY wait-for-it.sh /app/wait-for-it.sh

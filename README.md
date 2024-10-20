@@ -22,6 +22,7 @@ Feel free to explore the features and functionality of the application on this l
 - PostgreSQL database
 - Continuous Integration and Deployment with GitHub Actions
 - Dynamic color palette for a unique visual experience
+- Comprehensive logging system with rotation and separate error logs
 
 ## Technologies Used
 
@@ -38,6 +39,7 @@ Feel free to explore the features and functionality of the application on this l
 - Gunicorn as the WSGI HTTP Server
 - GitHub Actions for CI/CD
 - JavaScript for dynamic styling
+- Python's built-in logging module for application logging
 
 ## Project Architecture
 
@@ -50,6 +52,8 @@ This project follows a standard Django MVT (Model-View-Template) architecture wi
 - Integrates Prometheus for application monitoring
 - Uses Docker for containerization and easy deployment
 - Implements CI/CD pipeline using GitHub Actions
+- Implements a robust logging system with different log levels and file rotation
+- Separates debug logs and error logs into different files for easier troubleshooting
 
 ## Dynamic Color Palette
 
@@ -111,3 +115,13 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Logging
+
+This project implements a comprehensive logging system:
+- Debug and general logs are stored in `logs/debug.log`
+- Error and critical logs are stored in `logs/error.log`
+- Log files are rotated when they reach 5 MB, with a backup count of 5
+- Console logging is also implemented for immediate feedback during development
+
+Logs are crucial for monitoring the application's behavior and quickly identifying issues in production.
