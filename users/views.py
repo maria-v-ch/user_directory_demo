@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import UserRegistrationSerializer, CustomTokenObtainPairSerializer, UserSerializer
 from django.contrib.auth import get_user_model
-from .permissions import IsAdminUser, IsOwnerOrAdmin, CanViewProfile
+from .permissions import IsAdminUser, IsOwnerOrAdmin, CanViewProfile, IsAuthenticatedWithUnauthorizedResponse
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -213,7 +213,7 @@ def server_error(request):
 class APIUserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedWithUnauthorizedResponse]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
 
     @swagger_auto_schema(

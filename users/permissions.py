@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from rest_framework.exceptions import AuthenticationFailed
 
 class IsAdminUser(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -15,3 +16,9 @@ class CanViewProfile(permissions.BasePermission):
             return True
         # Regular users can only view their own profile
         return obj == request.user
+
+class IsAuthenticatedWithUnauthorizedResponse(BasePermission):
+    def has_permission(self, request, view):
+        if request.user and request.user.is_authenticated:
+            return True
+        raise AuthenticationFailed('Authentication credentials were not provided.')
