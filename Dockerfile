@@ -35,10 +35,7 @@ RUN apt-get update && \
 # Copy wheels from builder stage and install
 COPY --from=builder /app/wheels /wheels
 COPY --from=builder /app/requirements.txt .
-RUN pip install --no-cache-dir --find-links=/wheels -r requirements.txt && \
-    pip install drf-yasg==1.21.7 && \
-    pip install django-cors-headers==4.5.0 && \
-    pip install setuptools==65.5.0
+RUN pip install --no-cache-dir --find-links=/wheels -r requirements.txt
 
 # Copy project
 COPY . .
