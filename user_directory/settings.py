@@ -51,9 +51,11 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'drf_yasg',
     'django_prometheus',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -244,3 +246,14 @@ SWAGGER_SETTINGS = {
     },
     'SECURITY_REQUIREMENTS': [{'Bearer': []}],
 }
+
+CSRF_TRUSTED_ORIGINS = ['https://paragoni.space']
+
+# If you're using CORS headers, also add:
+CORS_ALLOWED_ORIGINS = ['https://paragoni.space']
+
+# If you want to allow all subdomains of paragoni.space, you can use:
+# CSRF_TRUSTED_ORIGINS = ['https://*.paragoni.space']
+# CORS_ALLOWED_ORIGINS = ['https://*.paragoni.space']
+
+CORS_ALLOW_CREDENTIALS = True
