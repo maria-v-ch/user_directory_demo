@@ -56,4 +56,12 @@ RUN pip freeze
 # Remove or properly set PYTHONPATH if needed
 # ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages:$PYTHONPATH
 
+# Copy entrypoint script and make it executable
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Set the entrypoint
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+# Change the CMD to be passed to the entrypoint
 CMD ["gunicorn", "user_directory.wsgi:application", "--bind", "0.0.0.0:8000"]

@@ -2,7 +2,7 @@ services:
   web:
     image: mariavch/user-directory-web:latest
     build: .
-    command: sh -c "/app/wait-for-it.sh db 5432 gunicorn --bind 0.0.0.0:8000 user_directory.wsgi:application"
+    command: gunicorn --bind 0.0.0.0:8000 user_directory.wsgi:application
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
@@ -18,6 +18,9 @@ services:
       - app_network
     environment:
       - PYTHONUNBUFFERED=1
+      - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME:-admin}
+      - DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL:-admin@example.com}
+      - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD:-adminpassword}
 
   db:
     image: postgres:13
