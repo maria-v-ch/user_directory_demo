@@ -16,6 +16,8 @@ services:
         condition: service_healthy
     networks:
       - app_network
+    environment:
+      - PYTHONUNBUFFERED=1
 
   db:
     image: postgres:13

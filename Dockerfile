@@ -13,7 +13,7 @@ RUN apt-get update && \
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip && \
-    pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+    pip install -r requirements.txt
 
 # Final stage
 FROM python:3.9-slim
@@ -33,7 +33,8 @@ RUN apt-get update && \
 COPY --from=builder /app/wheels /wheels
 COPY --from=builder /app/requirements.txt .
 RUN pip install --no-cache-dir --find-links=/wheels -r requirements.txt && \
-    pip install drf-yasg==1.21.7
+    pip install drf-yasg==1.21.7 && \
+    pip install django-cors-headers==4.5.0
 
 # Copy project
 COPY . .
