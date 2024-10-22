@@ -20,6 +20,20 @@ def test_user_registration_api():
     assert User.objects.get().username == 'testuser'
 
 @pytest.mark.django_db
+def test_user_login_api():
+    User.objects.create_user(username='testuser', password='testpass123')
+    client = APIClient()
+    url = reverse('api_login')
+    data = {
+        'username': 'testuser',
+        'password': 'testpass123'
+    }
+    response = client.post(url, data)
+    assert response.status_code == 200
+    assert 'access' in response.data
+    assert 'refresh' in response.data
+
+@pytest.mark.django_db
 def test_user_detail_api():
     user = User.objects.create_user(username='testuser', password='12345')
     client = APIClient()

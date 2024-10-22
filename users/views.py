@@ -267,3 +267,18 @@ class APIUserRegistrationView(APIView):
             return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
         logger.warning(f"User registration failed: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Add this new view for API login
+class APIUserLoginView(TokenObtainPairView):
+    throttle_classes = [AnonRateThrottle]
+    @swagger_auto_schema(
+        request_body=CustomTokenObtainPairSerializer,
+        responses={200: openapi.Response("Successful login", CustomTokenObtainPairSerializer)}
+    )
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:
+            logger.info(f"User logged in via API: {request.data.get('username')}")
+        else:
+            logger.warning(f"Failed login attempt via API for user: {request.data.get('username')}")
+        return response

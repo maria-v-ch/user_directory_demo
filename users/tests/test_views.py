@@ -40,4 +40,18 @@ def test_user_registration_view(client):
     assert User.objects.count() == 1
     assert User.objects.get().username == 'testuser'
 
+@pytest.mark.django_db
+def test_user_login_view(client):
+    User.objects.create_user(username='testuser', password='testpass123')
+    url = reverse('login')
+    response = client.get(url)
+    assert response.status_code == 200
+    
+    data = {
+        'username': 'testuser',
+        'password': 'testpass123'
+    }
+    response = client.post(url, data)
+    assert response.status_code == 302  # Redirect after successful login
+
 # Add more view tests as needed
