@@ -17,21 +17,10 @@ jobs:
       DB_NAME: postgres
       DB_USER: postgres
       DB_PASSWORD: postgrespassword
-      DB_HOST: localhost
+      DB_HOST: db
       DB_PORT: 5432
-      DATABASE_URL: postgres://postgres:postgrespassword@localhost:5432/postgres
+      DATABASE_URL: postgres://postgres:postgrespassword@db:5432/postgres
     
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgrespassword
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -61,6 +50,16 @@ jobs:
     - name: Run tests
       run: |
         docker-compose -f docker-compose.ci.yml up --build --exit-code-from web
+      env:
+        DEBUG: 'False'
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        ALLOWED_HOSTS: localhost,127.0.0.1,0.0.0.0,paragoni.space,www.paragoni.space
+        DB_NAME: postgres
+        DB_USER: postgres
+        DB_PASSWORD: postgrespassword
+        DB_HOST: db
+        DB_PORT: 5432
+        DATABASE_URL: postgres://postgres:postgrespassword@db:5432/postgres
 
   deploy:
     needs: build-and-test
