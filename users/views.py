@@ -196,34 +196,40 @@ def server_error(request):
     logger.critical(f"500 Server Error: {request.path}")
     return render(request, 'errors/500.html', status=500)
 
-class UserRegistrationView(APIView):
-    throttle_classes = [AnonRateThrottle]
-    @swagger_auto_schema(
-        request_body=UserRegistrationSerializer,
-        responses={201: UserSerializer(), 400: "Bad Request"}
-    )
-    def post(self, request):
-        serializer = UserRegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            logger.info(f"New user registered: {user.username}")
-            return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
-        logger.warning(f"User registration failed: {serializer.errors}")
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class UserRegistrationView(View):
+    template_name = 'users/register.html'
+    form_class = UserRegistrationForm
 
-class UserLoginView(TokenObtainPairView):
-    throttle_classes = [AnonRateThrottle]
-    @swagger_auto_schema(
-        request_body=CustomTokenObtainPairSerializer,
-        responses={200: openapi.Response("Successful login", CustomTokenObtainPairSerializer)}
-    )
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
     def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        if response.status_code == 200:
-            logger.info(f"User logged in: {request.data.get('username')}")
-        else:
-            logger.warning(f"Failed login attempt for user: {request.data.get('username')}")
-        return response
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('login')
+        return render(request, self.template_name, {'form': form})
+
+class UserLoginView(View):
+    template_name = 'users/login.html'
+    form_class = UserLoginForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+                return redirect('home')
+        return render(request, self.template_name, {'form': form})
 
 class APIUserListView(generics.ListAPIView):
     queryset = User.objects.all()
