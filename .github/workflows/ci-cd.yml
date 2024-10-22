@@ -46,6 +46,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     
+    - name: List installed packages
+      run: pip list
+    
     - name: Create log directory
       run: mkdir -p logs
     
