@@ -55,7 +55,7 @@ jobs:
     
     - name: Run tests
       run: |
-        pytest
+        docker-compose -f docker-compose.ci.yml up --build --exit-code-from web
 
   deploy:
     needs: build-and-test

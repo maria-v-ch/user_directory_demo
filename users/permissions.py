@@ -17,7 +17,7 @@ class CanViewProfile(permissions.BasePermission):
         # Regular users can only view their own profile
         return obj == request.user
 
-class IsAuthenticatedWithUnauthorizedResponse(BasePermission):
+class IsAuthenticatedWithUnauthorizedResponse(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.user and request.user.is_authenticated:
             return True

@@ -3,14 +3,26 @@ version: '3.8'
 services:
   web:
     build: .
-    command: sh -c "python manage.py migrate && python manage.py test"
+    command: >
+      sh -c "
+        ./wait-for-it.sh db:5432 -t 60 &&
+        python manage.py migrate &&
+        pytest
+      "
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+      - DJANGO_SETTINGS_MODULE=user_directory.settings
     depends_on:
       - db
+
   db:
     image: postgres:13
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

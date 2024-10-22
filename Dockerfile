@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED=1
 
 # Install system dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc
+    apt-get install -y --no-install-recommends gcc libpq-dev
 
 # Install Python dependencies
 COPY requirements.txt .
@@ -37,7 +37,8 @@ COPY --from=builder /app/wheels /wheels
 COPY --from=builder /app/requirements.txt .
 RUN pip install --no-cache-dir --find-links=/wheels -r requirements.txt && \
     pip install drf-yasg==1.21.7 && \
-    pip install django-cors-headers==4.5.0
+    pip install django-cors-headers==4.5.0 && \
+    pip install setuptools==65.5.0
 
 # Copy project
 COPY . .

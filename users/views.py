@@ -13,7 +13,7 @@ from django.urls import reverse_lazy
 from .forms import UserRegistrationForm, UserLoginForm
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
-from django.http import Http404
+from django.http import Http404, JsonResponse
 import random
 import logging
 from rest_framework.response import Response
@@ -292,4 +292,6 @@ class APIUserLoginView(TokenObtainPairView):
         else:
             logger.warning(f"Failed login attempt via API for user: {request.data.get('username')}")
         return response
+
+
 

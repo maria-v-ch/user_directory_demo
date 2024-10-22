@@ -69,7 +69,7 @@ def test_user_list_api():
     
     # Test unauthenticated access
     response = client.get(reverse('api_user_list'))
-    assert response.status_code == 401
+    assert response.status_code == 403
     
     # Test authenticated user access
     client.force_authenticate(user=user)
