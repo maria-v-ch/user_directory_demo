@@ -12,7 +12,10 @@ def test_user_registration_api():
     data = {
         'username': 'testuser',
         'password': 'testpass123',
-        'email': 'test@example.com'
+        'password2': 'testpass123',
+        'email': 'test@example.com',
+        'first_name': 'Test',
+        'last_name': 'User'
     }
     response = client.post(url, data)
     assert response.status_code == 201

@@ -45,6 +45,9 @@ class UserRegistrationView(BaseView, CreateView):
     form_class = UserRegistrationForm
     success_url = reverse_lazy('login')
 
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, {'form': self.form_class()})
+
     def form_valid(self, form):
         response = super().form_valid(form)
         login(self.request, self.object)
@@ -54,6 +57,9 @@ class UserRegistrationView(BaseView, CreateView):
 class UserLoginView(BaseView, LoginView):
     template_name = 'users/login.html'
     authentication_form = UserLoginForm
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, {'form': self.authentication_form()})
 
     def form_valid(self, form):
         logger.info(f"User logged in: {form.get_user().username}")
