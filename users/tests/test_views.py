@@ -7,20 +7,46 @@ User = get_user_model()
 
 @pytest.mark.django_db
 def test_user_list_view():
+    # Create a regular user and an admin user
     user = User.objects.create_user(username='testuser', password='12345')
+    admin = User.objects.create_superuser(username='admin', email='admin@example.com', password='admin12345')
+    
     client = Client()
+    
+    # Test regular user access
     client.login(username='testuser', password='12345')
-    url = reverse('user_list')
-    response = client.get(url)
+    response = client.get(reverse('user_list'))
     assert response.status_code == 200
+    assert 'users' in response.context
+    assert all(isinstance(u, dict) for u in response.context['users'])
+    
+    # Test admin user access
+    client.login(username='admin', password='admin12345')
+    response = client.get(reverse('user_list'))
+    assert response.status_code == 200
+    assert 'users' in response.context
+    assert all(isinstance(u, User) for u in response.context['users'])
 
 @pytest.mark.django_db
 def test_user_detail_view():
-    user = User.objects.create_user(username='testuser', password='12345')
+    user1 = User.objects.create_user(username='testuser1', password='12345')
+    user2 = User.objects.create_user(username='testuser2', password='12345')
+    admin = User.objects.create_superuser(username='admin', email='admin@example.com', password='admin12345')
+    
     client = Client()
-    client.login(username='testuser', password='12345')
-    url = reverse('user_detail', args=[user.id])
-    response = client.get(url)
+    
+    # Test user accessing their own profile
+    client.login(username='testuser1', password='12345')
+    response = client.get(reverse('user_detail', args=[user1.id]))
+    assert response.status_code == 200
+    
+    # Test user accessing another user's profile
+    response = client.get(reverse('user_detail', args=[user2.id]))
+    assert response.status_code == 403
+    
+    # Test admin accessing any user's profile
+    client.login(username='admin', password='admin12345')
+    response = client.get(reverse('user_detail', args=[user1.id]))
     assert response.status_code == 200
 
 @pytest.mark.django_db
@@ -51,3 +77,25 @@ def test_user_login_view(client):
     assert response.status_code == 302  # Redirect after successful login
 
 # Add more view tests as needed
+
+@pytest.mark.django_db
+def test_user_update_view():
+    user = User.objects.create_user(username='testuser', password='12345')
+    other_user = User.objects.create_user(username='otheruser', password='12345')
+    admin = User.objects.create_superuser(username='admin', email='admin@example.com', password='admin12345')
+    
+    client = Client()
+    
+    # Test user updating their own profile
+    client.login(username='testuser', password='12345')
+    response = client.get(reverse('user_update', args=[user.id]))
+    assert response.status_code == 200
+    
+    # Test user trying to update another user's profile
+    response = client.get(reverse('user_update', args=[other_user.id]))
+    assert response.status_code == 403
+    
+    # Test admin updating any user's profile
+    client.login(username='admin', password='admin12345')
+    response = client.get(reverse('user_update', args=[user.id]))
+    assert response.status_code == 200

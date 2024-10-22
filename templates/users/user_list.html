@@ -7,7 +7,15 @@
 <ul class="list-group">
     {% for user in users %}
     <li class="list-group-item">
-        <a href="{% url 'user_detail' user.id %}">{{ user.username }}</a>
+        {% if request.user.is_staff %}
+            <a href="{% url 'user_detail' user.id %}">{{ user.username }}</a>
+        {% else %}
+            {% if user.id == request.user.id %}
+                <a href="{% url 'user_detail' user.id %}">{{ user.username }} (You)</a>
+            {% else %}
+                {{ user.username }}
+            {% endif %}
+        {% endif %}
     </li>
     {% empty %}
     <li class="list-group-item">No users found.</li>

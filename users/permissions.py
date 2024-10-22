@@ -10,4 +10,8 @@ class IsOwnerOrAdmin(permissions.BasePermission):
 
 class CanViewProfile(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return obj == request.user or request.user.is_staff
+        # Admin can view all profiles
+        if request.user.is_staff:
+            return True
+        # Regular users can only view their own profile
+        return obj == request.user

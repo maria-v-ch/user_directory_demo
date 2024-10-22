@@ -90,10 +90,23 @@ class UserListView(BaseView, LoginRequiredMixin, ListView):
     template_name = 'users/user_list.html'
     context_object_name = 'users'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if not self.request.user.is_staff:
+            # For non-admin users, limit the information
+            context['users'] = [{'id': user.id, 'username': user.username} for user in context['users']]
+        return context
+
 class UserDetailView(BaseView, LoginRequiredMixin, DetailView):
     model = User
     template_name = 'users/user_detail.html'
     context_object_name = 'user'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if not CanViewProfile().has_object_permission(self.request, self, obj):
+            raise PermissionDenied("You don't have permission to view this profile.")
+        return obj
 
 class UserUpdateView(BaseView, LoginRequiredMixin, UpdateView):
     model = User
@@ -214,7 +227,7 @@ class APIUserListView(generics.ListAPIView):
 class APIUserDetailView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [CanViewProfile]
+    permission_classes = [IsAuthenticated, CanViewProfile]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
 
     @swagger_auto_schema(
@@ -279,3 +292,4 @@ class APIUserLoginView(TokenObtainPairView):
         else:
             logger.warning(f"Failed login attempt via API for user: {request.data.get('username')}")
         return response
+
