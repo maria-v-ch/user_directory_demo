@@ -23,7 +23,6 @@ from drf_yasg import openapi
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
-# Create your views here.
 
 User = get_user_model()
 
@@ -253,4 +252,18 @@ class APIUserUpdateView(generics.UpdateAPIView):
         logger.info(f"Partial user update attempted for user ID {kwargs.get('pk')} by {request.user.username}")
         return super().patch(request, *args, **kwargs)
 
-# Add similar decorators and logging to your other views
+# Add this new view for API registration
+class APIUserRegistrationView(APIView):
+    throttle_classes = [AnonRateThrottle]
+    @swagger_auto_schema(
+        request_body=UserRegistrationSerializer,
+        responses={201: UserSerializer(), 400: "Bad Request"}
+    )
+    def post(self, request):
+        serializer = UserRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            logger.info(f"New user registered: {user.username}")
+            return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
+        logger.warning(f"User registration failed: {serializer.errors}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
