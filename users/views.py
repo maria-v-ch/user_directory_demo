@@ -44,11 +44,11 @@ class HomePageView(BaseView, TemplateView):
 class UserRegistrationView(BaseView, CreateView):
     template_name = 'users/register.html'
     form_class = UserRegistrationForm
-    success_url = reverse_lazy('login')  # Redirect to login page after registration
+    success_url = reverse_lazy('login')
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        login(self.request, self.object)  # Log the user in after registration
+        login(self.request, self.object)
         logger.info(f"New user registered and logged in: {self.object.username}")
         return response
 
@@ -64,25 +64,11 @@ class UserListView(BaseView, LoginRequiredMixin, ListView):
     model = User
     template_name = 'users/user_list.html'
     context_object_name = 'users'
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-
-    def get_queryset(self):
-        logger.debug(f"User {self.request.user.username} accessed user list")
-        return super().get_queryset()
 
 class UserDetailView(BaseView, LoginRequiredMixin, DetailView):
     model = User
     template_name = 'users/user_detail.html'
     context_object_name = 'user'
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        if not CanViewProfile().has_object_permission(self.request, self, obj):
-            logger.warning(f"User {self.request.user.username} attempted to access unauthorized profile: {obj.username}")
-            raise PermissionDenied
-        logger.info(f"User {self.request.user.username} viewed profile of {obj.username}")
-        return obj
 
 class UserUpdateView(BaseView, LoginRequiredMixin, UpdateView):
     model = User
@@ -215,7 +201,7 @@ class UserLoginView(TokenObtainPairView):
             logger.warning(f"Failed login attempt for user: {request.data.get('username')}")
         return response
 
-class UserListView(generics.ListAPIView):
+class APIUserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
@@ -229,7 +215,7 @@ class UserListView(generics.ListAPIView):
         logger.info(f"User list accessed by {request.user.username}")
         return super().get(request, *args, **kwargs)
 
-class UserDetailView(generics.RetrieveAPIView):
+class APIUserDetailView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [CanViewProfile]
@@ -243,7 +229,7 @@ class UserDetailView(generics.RetrieveAPIView):
         logger.info(f"User detail accessed for user ID {kwargs.get('pk')} by {request.user.username}")
         return super().get(request, *args, **kwargs)
 
-class UserUpdateView(generics.UpdateAPIView):
+class APIUserUpdateView(generics.UpdateAPIView):
     throttle_classes = [UserRateThrottle]
     queryset = User.objects.all()
     serializer_class = UserSerializer
