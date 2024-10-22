@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from rest_framework import generics, permissions, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -46,24 +46,43 @@ class UserRegistrationView(BaseView, CreateView):
     success_url = reverse_lazy('login')
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name, {'form': self.form_class()})
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        login(self.request, self.object)
-        logger.info(f"New user registered and logged in: {self.object.username}")
-        return response
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            if request.content_type == 'application/json':
+                return JsonResponse({'message': 'Registration successful'}, status=201)
+            return redirect('login')
+        if request.content_type == 'application/json':
+            return JsonResponse(form.errors, status=400)
+        return render(request, self.template_name, {'form': form})
 
 class UserLoginView(BaseView, LoginView):
     template_name = 'users/login.html'
-    authentication_form = UserLoginForm
+    form_class = UserLoginForm
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name, {'form': self.authentication_form()})
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
 
-    def form_valid(self, form):
-        logger.info(f"User logged in: {form.get_user().username}")
-        return super().form_valid(form)
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+                if request.content_type == 'application/json':
+                    return JsonResponse({'message': 'Login successful'}, status=200)
+                return redirect('home')  # or wherever you want to redirect after login
+        if request.content_type == 'application/json':
+            return JsonResponse({'error': 'Invalid credentials'}, status=400)
+        return render(request, self.template_name, {'form': form})
 
 class UserListView(BaseView, LoginRequiredMixin, ListView):
     model = User
