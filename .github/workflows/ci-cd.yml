@@ -49,6 +49,13 @@ jobs:
     
     - name: Run tests
       run: |
+        echo "Current directory contents:"
+        ls -la
+        echo "wait-for-it.sh contents:"
+        cat wait-for-it.sh
+        echo "Checking wait-for-it.sh in Docker container:"
+        docker-compose -f docker-compose.ci.yml run web cat /app/wait-for-it.sh
+        echo "Running docker-compose:"
         docker-compose -f docker-compose.ci.yml up --build --exit-code-from web
       env:
         DEBUG: 'False'

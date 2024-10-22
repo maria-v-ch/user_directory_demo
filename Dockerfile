@@ -44,7 +44,7 @@ COPY . .
 RUN mkdir -p /app/staticfiles /app/static /app/logs && \
     chmod 777 /app/logs
 
-# Copy wait-for-it.sh and make it executable
+# Copy wait-for-it.sh and set permissions
 COPY wait-for-it.sh /app/wait-for-it.sh
 RUN chmod +x /app/wait-for-it.sh
 
